@@ -9,47 +9,39 @@ import React from 'react';
 import {
   SafeAreaView,
   StyleSheet,
-  Text,
+  Text, TouchableOpacity,
   useColorScheme,
   View,
 } from 'react-native';
+import Animated, {interpolate, useAnimatedStyle, useSharedValue} from 'react-native-reanimated';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  const expanded = useSharedValue(0);
+  const toggle = () => {
+    expanded.value = expanded.value > 0 ? 0 : 1;
   };
 
+  const style = useAnimatedStyle(() => {
+    const h = interpolate(expanded.value, [0, 1], [40, 80]);
+    return {
+      height: h,
+      backgroundColor: 'red',
+      borderTopRightRadius: 5,
+      borderTopLeftRadius: 5,
+      width: '100%',
+    };
+  }, []);
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <View
-        style={{backgroundColor: 'green', position: 'relative', padding: 20}}>
-        <Text>Test view</Text>
-      </View>
-    </SafeAreaView>
+    <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
+      <Animated.View style={[style]}>
+        <TouchableOpacity onPress={() => toggle()}>
+          <Text style={{ color: 'white' }}>Test</Text>
+        </TouchableOpacity>
+      </Animated.View>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;
